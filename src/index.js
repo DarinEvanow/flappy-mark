@@ -21,6 +21,7 @@ const initialBirdPosition = { x: config.width / 10, y: config.height / 2 };
 const FLAP_VELOCITY = 400;
 
 // Pipe variables
+let pipes;
 const PIPES_TO_RENDER = 4;
 const pipeVerticalDistanceRange = [150, 250];
 let pipeHorizontalPosition = null;
@@ -43,14 +44,15 @@ function create() {
     .image(initialBirdPosition.x, initialBirdPosition.y, "bird")
     .setOrigin(0);
   bird.body.gravity.y = 800;
+  pipes = this.physics.add.group();
 
   for (let i = 0; i <= PIPES_TO_RENDER; i++) {
-    const upperPipe = this.physics.add
-      .sprite(pipeHorizontalPosition, pipeVerticalPosition, "pipe")
+    const upperPipe = pipes
+      .create(pipeHorizontalPosition, pipeVerticalPosition, "pipe")
       .setOrigin(0, 1);
 
-    const lowerPipe = this.physics.add
-      .sprite(
+    const lowerPipe = pipes
+      .create(
         pipeHorizontalPosition,
         upperPipe.y + pipeVerticalDistance,
         "pipe"
@@ -85,6 +87,8 @@ function placePipe(upperPipe, lowerPipe) {
 
   lowerPipe.x = pipeHorizontalPosition;
   lowerPipe.y = pipeVerticalPosition + pipeVerticalDistance;
+
+  pipes.setVelocityX(-200);
 }
 
 function flap() {
