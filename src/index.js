@@ -45,22 +45,19 @@ function create() {
   bird.body.gravity.y = 800;
 
   for (let i = 0; i <= PIPES_TO_RENDER; i++) {
-    pipeHorizontalPosition += 300;
-    pipeVerticalDistance = Phaser.Math.Between(...pipeVerticalDistanceRange);
-    pipeVerticalPosition = Phaser.Math.Between(
-      20,
-      config.height - 20 - pipeVerticalDistance
-    );
-    upperPipe = this.physics.add
+    const upperPipe = this.physics.add
       .sprite(pipeHorizontalPosition, pipeVerticalPosition, "pipe")
       .setOrigin(0, 1);
-    lowerPipe = this.physics.add
+
+    const lowerPipe = this.physics.add
       .sprite(
         pipeHorizontalPosition,
         upperPipe.y + pipeVerticalDistance,
         "pipe"
       )
       .setOrigin(0, 0);
+
+    placePipe(upperPipe, lowerPipe);
   }
 
   this.input.on("pointerdown", flap);
@@ -71,6 +68,23 @@ function update() {
   if (bird.y > config.height || bird.y < -bird.height) {
     resetGame();
   }
+}
+
+function placePipe(upperPipe, lowerPipe) {
+  pipeHorizontalPosition += 300;
+
+  pipeVerticalDistance = Phaser.Math.Between(...pipeVerticalDistanceRange);
+
+  pipeVerticalPosition = Phaser.Math.Between(
+    20,
+    config.height - 20 - pipeVerticalDistance
+  );
+
+  upperPipe.x = pipeHorizontalPosition;
+  upperPipe.y = pipeVerticalPosition;
+
+  lowerPipe.x = pipeHorizontalPosition;
+  lowerPipe.y = pipeVerticalPosition + pipeVerticalDistance;
 }
 
 function flap() {
