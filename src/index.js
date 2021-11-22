@@ -24,9 +24,12 @@ const FLAP_VELOCITY = 400;
 let pipes;
 const PIPES_TO_RENDER = 4;
 const pipeVerticalDistanceRange = [150, 250];
-let pipeHorizontalPosition = null;
-let pipeVerticalDistance = null;
-let pipeVerticalPosition = null;
+const pipeHorizontalDistanceRange = [350, 550];
+let pipeHorizontalDistance = 0;
+let pipeHorizontalPosition = 0;
+let pipeVerticalDistance = 0;
+let pipeVerticalPosition = 0;
+let rightmostPipeX = 0;
 let upperPipe;
 let lowerPipe;
 
@@ -59,7 +62,7 @@ function create() {
       )
       .setOrigin(0, 0);
 
-    placePipe(upperPipe, lowerPipe);
+    placePipes(upperPipe, lowerPipe);
   }
 
   this.input.on("pointerdown", flap);
@@ -70,13 +73,32 @@ function update() {
   if (bird.y > config.height || bird.y < -bird.height) {
     resetGame();
   }
+
+  recyclePipes();
 }
 
-function placePipe(upperPipe, lowerPipe) {
-  pipeHorizontalPosition += 300;
+function recyclePipes() {
+  const tempPipes = [];
+
+  pipes.getChildren().forEach((pipe) => {
+    if (pipe.getBounds().right < 0) {
+      tempPipes.push(pipe);
+      if (tempPipes.length === 2) {
+        placePipes(...tempPipes);
+      }
+    }
+  });
+}
+
+function placePipes(upperPipe, lowerPipe) {
+  rightmostPipeX = getRightmostPipeX();
+  pipeHorizontalDistance = Phaser.Math.Between(...pipeHorizontalDistanceRange);
+  pipeHorizontalPosition = Phaser.Math.Between(
+    rightmostPipeX + pipeHorizontalDistanceRange[0],
+    rightmostPipeX + pipeHorizontalDistance
+  );
 
   pipeVerticalDistance = Phaser.Math.Between(...pipeVerticalDistanceRange);
-
   pipeVerticalPosition = Phaser.Math.Between(
     20,
     config.height - 20 - pipeVerticalDistance
@@ -89,6 +111,16 @@ function placePipe(upperPipe, lowerPipe) {
   lowerPipe.y = pipeVerticalPosition + pipeVerticalDistance;
 
   pipes.setVelocityX(-200);
+}
+
+function getRightmostPipeX() {
+  let rightmostX = 0;
+
+  pipes.getChildren().forEach((pipe) => {
+    rightmostX = Math.max(pipe.x, rightmostX);
+  });
+
+  return rightmostX;
 }
 
 function flap() {
