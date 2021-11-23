@@ -1,5 +1,6 @@
 // Importing the Phaser library
 import Phaser from "phaser";
+import PlayScene from "./scenes/PlayScene";
 
 const config = {
   type: Phaser.AUTO, // WebGL
@@ -8,11 +9,7 @@ const config = {
   physics: {
     default: "arcade", // Arcade physics plugin, manages physics simulation
   },
-  scene: {
-    preload: preload, // Called before the game starts
-    create: create, // Called during game creation
-    update: update, // Called every frame
-  },
+  scene: [PlayScene],
 };
 
 // Bird variables
@@ -35,18 +32,11 @@ let lowerPipe;
 
 // Used to load assets such as images, animations, music, etc.
 function preload() {
-  this.load.image("sky", "assets/sky.png");
-  this.load.image("bird", "assets/bird.png");
   this.load.image("pipe", "assets/pipe.png");
 }
 
 // Used to set the initial scene, such as adding the background or title screen
 function create() {
-  this.add.image(0, 0, "sky").setOrigin(0);
-  bird = this.physics.add
-    .image(initialBirdPosition.x, initialBirdPosition.y, "bird")
-    .setOrigin(0);
-  bird.body.gravity.y = 800;
   pipes = this.physics.add.group();
 
   for (let i = 0; i <= PIPES_TO_RENDER; i++) {
