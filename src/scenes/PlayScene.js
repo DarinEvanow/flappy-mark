@@ -62,6 +62,7 @@ class PlayScene extends Phaser.Scene {
     for (let i = 0; i <= PIPES_TO_RENDER; i++) {
       const upperPipe = this.pipes
         .create(this.pipeHorizontalPosition, this.pipeVerticalPosition, "pipe")
+        .setImmovable(true)
         .setOrigin(0, 1);
 
       const lowerPipe = this.pipes
@@ -70,6 +71,7 @@ class PlayScene extends Phaser.Scene {
           upperPipe.y + this.pipeVerticalDistance,
           "pipe"
         )
+        .setImmovable(true)
         .setOrigin(0, 0);
 
       this.placePipes(upperPipe, lowerPipe);
