@@ -32,6 +32,7 @@ class PlayScene extends Phaser.Scene {
     this.createBackground();
     this.createBird();
     this.createPipes();
+    this.createColliders();
     this.createEventHandlers();
   }
 
@@ -73,6 +74,16 @@ class PlayScene extends Phaser.Scene {
 
       this.placePipes(upperPipe, lowerPipe);
     }
+  }
+
+  createColliders() {
+    this.physics.add.collider(
+      this.bird,
+      this.pipes,
+      this.resetGame,
+      null,
+      this
+    );
   }
 
   createEventHandlers() {
