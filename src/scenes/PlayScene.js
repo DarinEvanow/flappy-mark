@@ -54,6 +54,7 @@ class PlayScene extends Phaser.Scene {
       )
       .setOrigin(0);
     this.bird.body.gravity.y = 800;
+    this.bird.setCollideWorldBounds(true);
   }
 
   createPipes() {
@@ -94,7 +95,10 @@ class PlayScene extends Phaser.Scene {
   }
 
   checkGameStatus() {
-    if (this.bird.y > this.config.height || this.bird.y < -this.bird.height) {
+    if (
+      this.bird.y >= this.config.height - this.bird.height ||
+      this.bird.y <= 0
+    ) {
       this.resetGame();
     }
   }
