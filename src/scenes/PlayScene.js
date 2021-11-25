@@ -29,7 +29,22 @@ class PlayScene extends Phaser.Scene {
   }
 
   create() {
+    this.createBackground();
+    this.createBird();
+    this.createPipes();
+    this.createEventHandlers();
+  }
+
+  update() {
+    this.checkGameStatus();
+    this.recyclePipes();
+  }
+
+  createBackground() {
     this.add.image(0, 0, "sky").setOrigin(0);
+  }
+
+  createBird() {
     this.bird = this.physics.add
       .image(
         this.config.initialBirdPosition.x,
@@ -38,7 +53,9 @@ class PlayScene extends Phaser.Scene {
       )
       .setOrigin(0);
     this.bird.body.gravity.y = 800;
+  }
 
+  createPipes() {
     this.pipes = this.physics.add.group();
 
     for (let i = 0; i <= PIPES_TO_RENDER; i++) {
@@ -56,17 +73,17 @@ class PlayScene extends Phaser.Scene {
 
       this.placePipes(upperPipe, lowerPipe);
     }
+  }
 
+  createEventHandlers() {
     this.input.on("pointerdown", this.flap, this);
     this.input.keyboard.on("keydown_SPACE", this.flap, this);
   }
 
-  update() {
+  checkGameStatus() {
     if (this.bird.y > this.config.height || this.bird.y < -this.bird.height) {
       this.resetGame();
     }
-
-    this.recyclePipes();
   }
 
   flap() {
