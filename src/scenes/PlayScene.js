@@ -154,9 +154,8 @@ class PlayScene extends Phaser.Scene {
   }
 
   resetGame() {
-    this.bird.x = this.config.initialBirdPosition.x;
-    this.bird.y = this.config.initialBirdPosition.y;
-    this.bird.body.velocity.y = 0;
+    this.physics.pause();
+    this.bird.setTint(0xee4824);
   }
 }
 
