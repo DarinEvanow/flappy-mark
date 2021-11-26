@@ -29,6 +29,7 @@ class PlayScene extends Phaser.Scene {
 
   preload() {
     this.load.image("sky", "assets/sky.png");
+    this.load.image("pause", "assets/pause.png");
     this.load.image("bird", "assets/bird.png");
     this.load.image("pipe", "assets/pipe.png");
   }
@@ -39,6 +40,7 @@ class PlayScene extends Phaser.Scene {
     this.createPipes();
     this.createColliders();
     this.createScore();
+    this.createPause();
     this.createEventHandlers();
   }
 
@@ -107,6 +109,23 @@ class PlayScene extends Phaser.Scene {
         fontSize: "32px",
         fill: "#000",
       }
+    );
+  }
+
+  createPause() {
+    const pauseButton = this.add
+      .image(this.config.width - 10, this.config.height - 10, "pause")
+      .setOrigin(1)
+      .setScale(3)
+      .setInteractive();
+
+    pauseButton.on(
+      "pointerdown",
+      () => {
+        this.physics.pause();
+        this.scene.pause();
+      },
+      this
     );
   }
 
