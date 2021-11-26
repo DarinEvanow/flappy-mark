@@ -20,6 +20,11 @@ class PlayScene extends Phaser.Scene {
     this.pipeVerticalDistance = 0;
     this.pipeVerticalPosition = 0;
     this.rightmostPipeX = 0;
+
+    // Score variables
+    this.score = 0;
+    this.scoreText = "";
+    this.highScoreText = "";
   }
 
   preload() {
@@ -33,6 +38,7 @@ class PlayScene extends Phaser.Scene {
     this.createBird();
     this.createPipes();
     this.createColliders();
+    this.createScore();
     this.createEventHandlers();
   }
 
@@ -85,6 +91,25 @@ class PlayScene extends Phaser.Scene {
     );
   }
 
+  createScore() {
+    this.score = 0;
+    this.scoreText = this.add.text(16, 16, `Score: ${this.score}`, {
+      fontSize: "32px",
+      fill: "#000",
+    });
+
+    const highScore = localStorage.getItem("flappyMarkHighScore");
+    this.highScoreText = this.add.text(
+      16,
+      48,
+      `High score: ${highScore || 0}`,
+      {
+        fontSize: "32px",
+        fill: "#000",
+      }
+    );
+  }
+
   createEventHandlers() {
     this.input.on("pointerdown", this.flap, this);
     this.input.keyboard.on("keydown_SPACE", this.flap, this);
@@ -111,6 +136,7 @@ class PlayScene extends Phaser.Scene {
         tempPipes.push(pipe);
         if (tempPipes.length === 2) {
           this.placePipes(...tempPipes);
+          this.increaseScore();
         }
       }
     });
@@ -157,6 +183,8 @@ class PlayScene extends Phaser.Scene {
     this.physics.pause();
     this.bird.setTint(0xee4824);
 
+    this.setHighScore();
+
     this.time.addEvent({
       delay: 1000,
       callback: () => {
@@ -164,6 +192,20 @@ class PlayScene extends Phaser.Scene {
       },
       loop: false,
     });
+  }
+
+  setHighScore() {
+    const highScoreText = localStorage.getItem("flappyMarkHighScore");
+    const highScore = highScoreText && parseInt(highScoreText, 10);
+
+    if (!highScore || this.score > highScore) {
+      localStorage.setItem("flappyMarkHighScore", this.score);
+    }
+  }
+
+  increaseScore() {
+    this.score++;
+    this.scoreText.setText(`Score: ${this.score}`);
   }
 }
 
