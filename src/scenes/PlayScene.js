@@ -60,18 +60,14 @@ class PlayScene extends Phaser.Scene {
   createPipes() {
     this.pipes = this.physics.add.group();
 
-    for (let i = 0; i <= PIPES_TO_RENDER; i++) {
+    for (let i = 0; i < PIPES_TO_RENDER; i++) {
       const upperPipe = this.pipes
-        .create(this.pipeHorizontalPosition, this.pipeVerticalPosition, "pipe")
+        .create(0, 0, "pipe")
         .setImmovable(true)
         .setOrigin(0, 1);
 
       const lowerPipe = this.pipes
-        .create(
-          this.pipeHorizontalPosition,
-          upperPipe.y + this.pipeVerticalDistance,
-          "pipe"
-        )
+        .create(0, 0, "pipe")
         .setImmovable(true)
         .setOrigin(0, 0);
 
@@ -160,6 +156,14 @@ class PlayScene extends Phaser.Scene {
   resetGame() {
     this.physics.pause();
     this.bird.setTint(0xee4824);
+
+    this.time.addEvent({
+      delay: 1000,
+      callback: () => {
+        this.scene.restart();
+      },
+      loop: false,
+    });
   }
 }
 
