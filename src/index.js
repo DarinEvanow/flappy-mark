@@ -1,5 +1,5 @@
 import Phaser from "phaser";
-import PreloadScene from "./scanes/PreloadScene";
+import PreloadScene from "./scenes/PreloadScene";
 import MenuScene from "./scenes/MenuScene";
 import PlayScene from "./scenes/PlayScene";
 
