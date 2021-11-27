@@ -1,14 +1,13 @@
-import Phaser from "phaser";
+import BaseScene from "./BaseScene";
 
 const FLAP_VELOCITY = 400;
 const PIPES_TO_RENDER = 4;
 const PIPE_VERTICAL_DISTANCE_RANGE = [150, 250];
 const PIPE_HORIZONTAL_DISTANCE_RANGE = [350, 550];
 
-class PlayScene extends Phaser.Scene {
+class PlayScene extends BaseScene {
   constructor(config) {
-    super("PlayScene");
-    this.config = config;
+    super("PlayScene", config);
 
     // Bird variables
     this.bird = null;
@@ -27,14 +26,8 @@ class PlayScene extends Phaser.Scene {
     this.highScoreText = "";
   }
 
-  preload() {
-    this.load.image("sky", "assets/sky.png");
-    this.load.image("pause", "assets/pause.png");
-    this.load.image("bird", "assets/bird.png");
-    this.load.image("pipe", "assets/pipe.png");
-  }
-
   create() {
+    super.create();
     this.createBackground();
     this.createBird();
     this.createPipes();

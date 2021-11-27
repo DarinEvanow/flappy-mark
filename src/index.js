@@ -1,5 +1,6 @@
-// Importing the Phaser library
 import Phaser from "phaser";
+import PreloadScene from "./scanes/PreloadScene";
+import MenuScene from "./scenes/MenuScene";
 import PlayScene from "./scenes/PlayScene";
 
 const WIDTH = 800;
@@ -12,13 +13,18 @@ const SHARED_CONFIG = {
   initialBirdPosition: INITIAL_BIRD_POSITION,
 };
 
+const SCENES = [PreloadScene, MenuScene, PlayScene];
+
+const createScene = (Scene) => new Scene(SHARED_CONFIG);
+const initScenes = () => SCENES.map(createScene);
+
 const config = {
   type: Phaser.AUTO, // WebGL
   ...SHARED_CONFIG,
   physics: {
     default: "arcade", // Arcade physics plugin, manages physics simulation
   },
-  scene: [new PlayScene(SHARED_CONFIG)],
+  scene: initScenes(),
 };
 
 new Phaser.Game(config);
