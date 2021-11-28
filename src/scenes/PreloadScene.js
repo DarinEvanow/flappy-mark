@@ -1,8 +1,8 @@
 import BaseScene from "./BaseScene";
 
 class PreloadScene extends BaseScene {
-  constructor() {
-    super("PreloadScene");
+  constructor(config) {
+    super("PreloadScene", config);
   }
 
   preload() {
