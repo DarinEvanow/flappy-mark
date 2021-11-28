@@ -1,14 +1,13 @@
-import Phaser from "phaser";
+import BaseScene from "./BaseScene";
 
 const FLAP_VELOCITY = 400;
 const PIPES_TO_RENDER = 4;
 const PIPE_VERTICAL_DISTANCE_RANGE = [150, 250];
 const PIPE_HORIZONTAL_DISTANCE_RANGE = [350, 550];
 
-class PlayScene extends Phaser.Scene {
+class PlayScene extends BaseScene {
   constructor(config) {
-    super("PlayScene");
-    this.config = config;
+    super("PlayScene", config);
 
     // Bird variables
     this.bird = null;
@@ -27,19 +26,16 @@ class PlayScene extends Phaser.Scene {
     this.highScoreText = "";
   }
 
-  preload() {
-    this.load.image("sky", "assets/sky.png");
-    this.load.image("bird", "assets/bird.png");
-    this.load.image("pipe", "assets/pipe.png");
-  }
-
   create() {
+    super.create();
     this.createBackground();
     this.createBird();
     this.createPipes();
     this.createColliders();
     this.createScore();
+    this.createPause();
     this.createEventHandlers();
+    this.listenToEvents();
   }
 
   update() {
@@ -110,9 +106,60 @@ class PlayScene extends Phaser.Scene {
     );
   }
 
+  createPause() {
+    this.isPaused = false;
+
+    const pauseButton = this.add
+      .image(this.config.width - 10, this.config.height - 10, "pause")
+      .setOrigin(1)
+      .setScale(3)
+      .setInteractive();
+
+    pauseButton.on(
+      "pointerdown",
+      () => {
+        this.isPaused = true;
+        this.physics.pause();
+        this.scene.pause();
+        this.scene.launch("PauseScene");
+      },
+      this
+    );
+  }
+
   createEventHandlers() {
     this.input.on("pointerdown", this.flap, this);
     this.input.keyboard.on("keydown_SPACE", this.flap, this);
+  }
+
+  listenToEvents() {
+    if (this.pauseEvent) {
+      return;
+    }
+
+    this.pauseEvent = this.events.on("resume", () => {
+      this.initialTime = 3;
+      this.countdownText = this.add
+        .text(...this.screenCenter, this.initialTime, this.fontOptions)
+        .setOrigin(0.5);
+      this.timedEvent = this.time.addEvent({
+        delay: 1000,
+        callback: this.countdown,
+        callbackScope: this,
+        loop: true,
+      });
+    });
+  }
+
+  countdown() {
+    this.initialTime--;
+    this.countdownText.setText(this.initialTime);
+    if (this.initialTime <= 0) {
+      this.isPaused = false;
+      this.countdownText.setText("");
+      this.physics.resume();
+      this.timedEvent.remove();
+    }
   }
 
   checkGameStatus() {
@@ -125,6 +172,9 @@ class PlayScene extends Phaser.Scene {
   }
 
   flap() {
+    if (this.isPaused) {
+      return;
+    }
     this.bird.body.velocity.y = -FLAP_VELOCITY;
   }
 
