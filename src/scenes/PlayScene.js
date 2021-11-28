@@ -2,8 +2,6 @@ import BaseScene from "./BaseScene";
 
 const FLAP_VELOCITY = 400;
 const PIPES_TO_RENDER = 4;
-const PIPE_VERTICAL_DISTANCE_RANGE = [150, 250];
-const PIPE_HORIZONTAL_DISTANCE_RANGE = [350, 550];
 
 class PlayScene extends BaseScene {
   constructor(config) {
@@ -24,9 +22,27 @@ class PlayScene extends BaseScene {
     this.score = 0;
     this.scoreText = "";
     this.highScoreText = "";
+
+    // Difficulty variables
+    this.currentDifficulty = "easy";
+    this.difficulties = {
+      easy: {
+        pipeVerticalDistanceRange: [200, 275],
+        pipeHorizontalDistanceRange: [350, 400],
+      },
+      normal: {
+        pipeVerticalDistanceRange: [175, 250],
+        pipeHorizontalDistanceRange: [320, 370],
+      },
+      hard: {
+        pipeVerticalDistanceRange: [150, 225],
+        pipeHorizontalDistanceRange: [290, 320],
+      },
+    };
   }
 
   create() {
+    this.currentDifficulty = "easy";
     super.create();
     this.createBackground();
     this.createBird();
@@ -187,23 +203,27 @@ class PlayScene extends BaseScene {
         if (tempPipes.length === 2) {
           this.placePipes(...tempPipes);
           this.increaseScore();
+          this.setDifficulty();
         }
       }
     });
   }
 
   placePipes(upperPipe, lowerPipe) {
+    const { pipeHorizontalDistanceRange, pipeVerticalDistanceRange } =
+      this.difficulties[this.currentDifficulty];
     this.rightmostPipeX = this.getRightmostPipeX();
+
     this.pipeHorizontalDistance = Phaser.Math.Between(
-      ...PIPE_HORIZONTAL_DISTANCE_RANGE
+      ...pipeHorizontalDistanceRange
     );
     this.pipeHorizontalPosition = Phaser.Math.Between(
-      this.rightmostPipeX + PIPE_HORIZONTAL_DISTANCE_RANGE[0],
+      this.rightmostPipeX + pipeHorizontalDistanceRange[0],
       this.rightmostPipeX + this.pipeHorizontalDistance
     );
 
     this.pipeVerticalDistance = Phaser.Math.Between(
-      ...PIPE_VERTICAL_DISTANCE_RANGE
+      ...pipeVerticalDistanceRange
     );
     this.pipeVerticalPosition = Phaser.Math.Between(
       20,
@@ -256,6 +276,16 @@ class PlayScene extends BaseScene {
   increaseScore() {
     this.score++;
     this.scoreText.setText(`Score: ${this.score}`);
+  }
+
+  setDifficulty() {
+    if (this.score >= 30) {
+      this.currentDifficulty = "hard";
+    }
+
+    if (this.score >= 15 && this.score < 30) {
+      this.currentDifficulty = "normal";
+    }
   }
 }
 
