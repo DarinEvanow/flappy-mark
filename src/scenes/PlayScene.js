@@ -1,7 +1,7 @@
 import BaseScene from "./BaseScene";
 
 const FLAP_VELOCITY = 400;
-const PIPES_TO_RENDER = 4;
+const TRASHCANS_TO_RENDER = 4;
 
 class PlayScene extends BaseScene {
   constructor(config) {
@@ -10,13 +10,13 @@ class PlayScene extends BaseScene {
     // Bird variables
     this.bird = null;
 
-    // Pipe variables
-    this.pipes = null;
-    this.pipeHorizontalDistance = 0;
-    this.pipeHorizontalPosition = 0;
-    this.pipeVerticalDistance = 0;
-    this.pipeVerticalPosition = 0;
-    this.rightmostPipeX = 0;
+    // Trashcan variables
+    this.trashcans = null;
+    this.trashcanHorizontalDistance = 0;
+    this.trashcanHorizontalPosition = 0;
+    this.trashcanVerticalDistance = 0;
+    this.trashcanVerticalPosition = 0;
+    this.rightmostTrashcanX = 0;
 
     // Score variables
     this.score = 0;
@@ -27,16 +27,16 @@ class PlayScene extends BaseScene {
     this.currentDifficulty = "easy";
     this.difficulties = {
       easy: {
-        pipeVerticalDistanceRange: [200, 275],
-        pipeHorizontalDistanceRange: [350, 400],
+        trashcanVerticalDistanceRange: [200, 275],
+        trashcanHorizontalDistanceRange: [350, 400],
       },
       normal: {
-        pipeVerticalDistanceRange: [175, 250],
-        pipeHorizontalDistanceRange: [320, 370],
+        trashcanVerticalDistanceRange: [175, 250],
+        trashcanHorizontalDistanceRange: [320, 370],
       },
       hard: {
-        pipeVerticalDistanceRange: [150, 225],
-        pipeHorizontalDistanceRange: [290, 320],
+        trashcanVerticalDistanceRange: [150, 225],
+        trashcanHorizontalDistanceRange: [290, 320],
       },
     };
   }
@@ -46,7 +46,7 @@ class PlayScene extends BaseScene {
     super.create();
     this.createBackground();
     this.createBird();
-    this.createPipes();
+    this.createTrashcans();
     this.createColliders();
     this.createScore();
     this.createPause();
@@ -65,7 +65,7 @@ class PlayScene extends BaseScene {
 
   update() {
     this.checkGameStatus();
-    this.recyclePipes();
+    this.recycleTrashcans();
   }
 
   createBackground() {
@@ -88,28 +88,29 @@ class PlayScene extends BaseScene {
     this.bird.setCollideWorldBounds(true);
   }
 
-  createPipes() {
-    this.pipes = this.physics.add.group();
+  createTrashcans() {
+    this.trashcans = this.physics.add.group();
 
-    for (let i = 0; i < PIPES_TO_RENDER; i++) {
-      const upperPipe = this.pipes
-        .create(0, 0, "pipe")
+    for (let i = 0; i < TRASHCANS_TO_RENDER; i++) {
+      const upperTrashcan = this.trashcans
+        .create(0, 0, "trashcan")
         .setImmovable(true)
+        .setFlipY(true)
         .setOrigin(0, 1);
 
-      const lowerPipe = this.pipes
-        .create(0, 0, "pipe")
+      const lowerTrashcan = this.trashcans
+        .create(0, 0, "trashcan")
         .setImmovable(true)
         .setOrigin(0, 0);
 
-      this.placePipes(upperPipe, lowerPipe);
+      this.placeTrashcans(upperTrashcan, lowerTrashcan);
     }
   }
 
   createColliders() {
     this.physics.add.collider(
       this.bird,
-      this.pipes,
+      this.trashcans,
       this.resetGame,
       null,
       this
@@ -207,14 +208,14 @@ class PlayScene extends BaseScene {
     this.bird.body.velocity.y = -FLAP_VELOCITY;
   }
 
-  recyclePipes() {
-    const tempPipes = [];
+  recycleTrashcans() {
+    const tempTrashcans = [];
 
-    this.pipes.getChildren().forEach((pipe) => {
-      if (pipe.getBounds().right < 0) {
-        tempPipes.push(pipe);
-        if (tempPipes.length === 2) {
-          this.placePipes(...tempPipes);
+    this.trashcans.getChildren().forEach((trashcan) => {
+      if (trashcan.getBounds().right < 0) {
+        tempTrashcans.push(trashcan);
+        if (tempTrashcans.length === 2) {
+          this.placeTrashcans(...tempTrashcans);
           this.increaseScore();
           this.setDifficulty();
         }
@@ -222,41 +223,42 @@ class PlayScene extends BaseScene {
     });
   }
 
-  placePipes(upperPipe, lowerPipe) {
-    const { pipeHorizontalDistanceRange, pipeVerticalDistanceRange } =
+  placeTrashcans(upperTrashcan, lowerTrashcan) {
+    const { trashcanHorizontalDistanceRange, trashcanVerticalDistanceRange } =
       this.difficulties[this.currentDifficulty];
-    this.rightmostPipeX = this.getRightmostPipeX();
+    this.rightmostTrashcanX = this.getRightmostTrashcanX();
 
-    this.pipeHorizontalDistance = Phaser.Math.Between(
-      ...pipeHorizontalDistanceRange
+    this.trashcanHorizontalDistance = Phaser.Math.Between(
+      ...trashcanHorizontalDistanceRange
     );
-    this.pipeHorizontalPosition = Phaser.Math.Between(
-      this.rightmostPipeX + pipeHorizontalDistanceRange[0],
-      this.rightmostPipeX + this.pipeHorizontalDistance
+    this.trashcanHorizontalPosition = Phaser.Math.Between(
+      this.rightmostTrashcanX + trashcanHorizontalDistanceRange[0],
+      this.rightmostTrashcanX + this.trashcanHorizontalDistance
     );
 
-    this.pipeVerticalDistance = Phaser.Math.Between(
-      ...pipeVerticalDistanceRange
+    this.trashcanVerticalDistance = Phaser.Math.Between(
+      ...trashcanVerticalDistanceRange
     );
-    this.pipeVerticalPosition = Phaser.Math.Between(
+    this.trashcanVerticalPosition = Phaser.Math.Between(
       20,
-      this.config.height - 20 - this.pipeVerticalDistance
+      this.config.height - 20 - this.trashcanVerticalDistance
     );
 
-    upperPipe.x = this.pipeHorizontalPosition;
-    upperPipe.y = this.pipeVerticalPosition;
+    upperTrashcan.x = this.trashcanHorizontalPosition;
+    upperTrashcan.y = this.trashcanVerticalPosition;
 
-    lowerPipe.x = this.pipeHorizontalPosition;
-    lowerPipe.y = this.pipeVerticalPosition + this.pipeVerticalDistance;
+    lowerTrashcan.x = this.trashcanHorizontalPosition;
+    lowerTrashcan.y =
+      this.trashcanVerticalPosition + this.trashcanVerticalDistance;
 
-    this.pipes.setVelocityX(-200);
+    this.trashcans.setVelocityX(-200);
   }
 
-  getRightmostPipeX() {
+  getRightmostTrashcanX() {
     let rightmostX = 0;
 
-    this.pipes.getChildren().forEach((pipe) => {
-      rightmostX = Math.max(pipe.x, rightmostX);
+    this.trashcans.getChildren().forEach((trashcan) => {
+      rightmostX = Math.max(trashcan.x, rightmostX);
     });
 
     return rightmostX;
