@@ -52,7 +52,7 @@ module.exports = {
       patterns: [
         {
           from: path.resolve(__dirname, "assets/**/*"),
-          to: path.resolve(__dirname, "build"),
+          to: path.resolve(__dirname, "public"),
         },
       ],
     }),

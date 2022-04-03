@@ -26,7 +26,6 @@ const config = {
   pixelArt: true,
   physics: {
     default: "arcade", // Arcade physics plugin, manages physics simulation
-    arcade: { debug: true },
   },
   scene: initScenes(),
 };
